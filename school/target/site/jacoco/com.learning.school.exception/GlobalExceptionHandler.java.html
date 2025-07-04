@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">school</a> &gt; <a href="index.source.html" class="el_package">com.learning.school.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.learning.school.exception;
+
+import com.learning.school.dto.ErrorResponseDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+
+@ControllerAdvice
+<span class="nc" id="L12">public class GlobalExceptionHandler {</span>
+
+    @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
+    public ResponseEntity&lt;String&gt; internalServerException(HttpServerErrorException.InternalServerError ex){
+<span class="nc" id="L16">        return ResponseEntity.internalServerError().body(ex.getMessage());</span>
+    }
+
+    @ExceptionHandler(HttpClientErrorException.NotFound.class)
+    public ResponseEntity&lt;ErrorResponseDto&gt; notFoundException(HttpClientErrorException.NotFound ex){
+<span class="nc" id="L21">        ErrorResponseDto errorResponseDto = new ErrorResponseDto();</span>
+<span class="nc" id="L22">        errorResponseDto.setMessage(ex.getMessage());</span>
+<span class="nc" id="L23">        errorResponseDto.setStatus(HttpStatus.NOT_FOUND);</span>
+<span class="nc" id="L24">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);</span>
+    }
+
+    @ExceptionHandler(BadRequestExcep.class)
+    public ResponseEntity&lt;ErrorResponseDto&gt; badRequest(BadRequestExcep ex){
+<span class="nc" id="L29">        ErrorResponseDto errorResponseDto = new ErrorResponseDto();</span>
+<span class="nc" id="L30">        errorResponseDto.setMessage(ex.getMessage());</span>
+<span class="nc" id="L31">        errorResponseDto.setStatus(HttpStatus.NOT_FOUND);</span>
+<span class="nc" id="L32">        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);</span>
+    }
+
+    @ExceptionHandler(CustomExceptionHandler.class)
+    public ResponseEntity&lt;ErrorResponseDto&gt; customException(CustomExceptionHandler ex){
+<span class="nc" id="L37">        return errorResponseGenerator(ex);</span>
+    }
+
+    private ResponseEntity&lt;ErrorResponseDto&gt; errorResponseGenerator(CustomExceptionHandler ex){
+<span class="nc" id="L41">        ErrorResponseDto errorResponseDto = new ErrorResponseDto();</span>
+<span class="nc" id="L42">        errorResponseDto.setMessage(ex.getMessage());</span>
+<span class="nc" id="L43">        errorResponseDto.setStatus(ex.getStatus());</span>
+        //        return new ResponseEntity&lt;&gt;(errorResponseDto, HttpStatus.NOT_FOUND); // alternate way to return
+<span class="nc" id="L45">        return ResponseEntity.status(ex.getStatus()).body(errorResponseDto);</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

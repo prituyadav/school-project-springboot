@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SchoolServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">school</a> &gt; <a href="index.source.html" class="el_package">com.learning.school.service</a> &gt; <span class="el_source">SchoolServiceImpl.java</span></div><h1>SchoolServiceImpl.java</h1><pre class="source lang-java linenums">package com.learning.school.service;
+
+import com.learning.school.dto.SchoolDto;
+import com.learning.school.entity.School;
+import com.learning.school.exception.CustomExceptionHandler;
+import com.learning.school.repository.SchoolRepo;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+import static com.learning.school.common.ErrorMessageConstant.SCHOOL_NOT_FOUND;
+
+@Service
+<span class="fc" id="L19">@Slf4j</span>
+public class SchoolServiceImpl implements SchoolService{
+
+    private final SchoolRepo schoolRepo;
+
+    @Autowired
+<span class="fc" id="L25">    public SchoolServiceImpl(SchoolRepo schoolRepo){</span>
+<span class="fc" id="L26">        this.schoolRepo = schoolRepo;</span>
+<span class="fc" id="L27">    }</span>
+
+    @Cacheable(value = &quot;school&quot;, key= &quot;#id&quot;)
+    @Override
+    public School getSchoolById(String id) {
+<span class="fc" id="L32">        Optional&lt;School&gt; school =  schoolRepo.findById(String.valueOf(id));</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">        if(school.isEmpty()){</span>
+<span class="fc" id="L34">            throw new CustomExceptionHandler(SCHOOL_NOT_FOUND, HttpStatus.NOT_FOUND);</span>
+        }
+<span class="nc" id="L36">        return school.get();</span>
+
+    }
+
+    @CachePut(value = &quot;school&quot;, key = &quot;#result.id&quot;)
+    @Override
+    public void addSchool(SchoolDto school) {
+        try{
+<span class="nc bnc" id="L44" title="All 2 branches missed.">            if(schoolRepo.existsByNameAndAddress(school.getName(), school.getAddress())){</span>
+<span class="nc" id="L45">                throw new CustomExceptionHandler(&quot;School already exist&quot;, HttpStatus.CONFLICT);</span>
+            }
+<span class="nc" id="L47">            School schoolObj = School.builder().name(school.getName()).address(school.getAddress()).board(school.getBoard()).build();</span>
+<span class="nc" id="L48">            schoolRepo.save(schoolObj);</span>
+<span class="nc" id="L49">        }catch (Exception ex){</span>
+<span class="nc" id="L50">            log.info(&quot;SchoolServiceImpl::addSchool&quot;, ex);</span>
+<span class="nc" id="L51">            throw new CustomExceptionHandler(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="nc" id="L52">        }</span>
+
+<span class="nc" id="L54">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

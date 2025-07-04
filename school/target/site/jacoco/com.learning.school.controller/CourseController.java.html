@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CourseController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">school</a> &gt; <a href="index.source.html" class="el_package">com.learning.school.controller</a> &gt; <span class="el_source">CourseController.java</span></div><h1>CourseController.java</h1><pre class="source lang-java linenums">package com.learning.school.controller;
+
+import com.learning.school.common.ResponseHandler;
+import com.learning.school.dto.CourseDto;
+import com.learning.school.dto.SuccessResponseDto;
+import com.learning.school.entity.Course;
+import com.learning.school.service.CourseService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/course&quot;)
+<span class="nc" id="L18">@RequiredArgsConstructor</span>
+public class CourseController {
+
+    private final CourseService courseService;
+
+    @PostMapping
+    public ResponseEntity&lt;SuccessResponseDto&gt; create(@Valid @RequestBody CourseDto dto) {
+<span class="nc" id="L25">        Course saved = courseService.addCourse(dto);</span>
+<span class="nc" id="L26">        return ResponseHandler.successResponseHandler(saved, HttpStatus.CREATED);</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;SuccessResponseDto&gt; getById(@PathVariable String id) {
+<span class="nc" id="L31">        Course course = courseService.getCourse(id);</span>
+<span class="nc" id="L32">        return ResponseHandler.successResponseHandler(course, HttpStatus.OK);</span>
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;SuccessResponseDto&gt; getAll() {
+<span class="nc" id="L37">        List&lt;Course&gt; list = courseService.getAllCourses();</span>
+<span class="nc" id="L38">        return ResponseHandler.successResponseHandler(list, HttpStatus.OK);</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;SuccessResponseDto&gt; delete(@PathVariable String id) {
+<span class="nc" id="L43">        courseService.deleteCourse(id);</span>
+<span class="nc" id="L44">        return ResponseHandler.successResponseHandler(&quot;Deleted successfully&quot;, HttpStatus.OK);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

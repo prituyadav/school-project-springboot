@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudentServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">school</a> &gt; <a href="index.source.html" class="el_package">com.learning.school.service</a> &gt; <span class="el_source">StudentServiceImpl.java</span></div><h1>StudentServiceImpl.java</h1><pre class="source lang-java linenums">package com.learning.school.service;
+
+import com.learning.school.dto.StudentDto;
+import com.learning.school.entity.Course;
+import com.learning.school.entity.Student;
+import com.learning.school.exception.CustomExceptionHandler;
+import com.learning.school.repository.CourseRepo;
+import com.learning.school.repository.StudentRepo;
+import com.learning.school.service.StudentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+<span class="nc" id="L18">@RequiredArgsConstructor</span>
+public class StudentServiceImpl implements StudentService {
+
+    private final StudentRepo studentRepo;
+    private final CourseRepo courseRepo;
+
+    @Override
+    public Student createStudent(StudentDto dto) {
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        if (studentRepo.existsByEmail(dto.getEmail())) {</span>
+<span class="nc" id="L27">            throw new CustomExceptionHandler(&quot;Student already exists&quot;, HttpStatus.CONFLICT);</span>
+        }
+<span class="nc" id="L29">        Student student = Student.builder()</span>
+<span class="nc" id="L30">                .name(dto.getName())</span>
+<span class="nc" id="L31">                .email(dto.getEmail())</span>
+<span class="nc" id="L32">                .schoolId(dto.getSchoolId())</span>
+<span class="nc" id="L33">                .enrolledCourses(new ArrayList&lt;&gt;())</span>
+<span class="nc" id="L34">                .build();</span>
+<span class="nc" id="L35">        return studentRepo.save(student);</span>
+    }
+
+    @Override
+    public Student getStudent(String id) {
+<span class="nc" id="L40">        return studentRepo.findById(id)</span>
+<span class="nc" id="L41">                .orElseThrow(() -&gt; new CustomExceptionHandler(&quot;Student not found&quot;, HttpStatus.NOT_FOUND));</span>
+    }
+
+    @Override
+    public List&lt;Student&gt; getAllStudents() {
+<span class="nc" id="L46">        return studentRepo.findAll();</span>
+    }
+
+    @Override
+    public void deleteStudent(String id) {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (!studentRepo.existsById(id)) {</span>
+<span class="nc" id="L52">            throw new CustomExceptionHandler(&quot;Student not found&quot;, HttpStatus.NOT_FOUND);</span>
+        }
+<span class="nc" id="L54">        studentRepo.deleteById(id);</span>
+<span class="nc" id="L55">    }</span>
+
+    @Override
+    public Student enrollCourse(String studentId, String courseId) {
+<span class="nc" id="L59">        Student student = getStudent(studentId);</span>
+<span class="nc" id="L60">        courseRepo.findById(courseId)</span>
+<span class="nc" id="L61">                .orElseThrow(() -&gt; new CustomExceptionHandler(&quot;Course not found&quot;, HttpStatus.NOT_FOUND));</span>
+
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (!student.getEnrolledCourses().contains(courseId)) {</span>
+<span class="nc" id="L64">            student.getEnrolledCourses().add(courseId);</span>
+<span class="nc" id="L65">            studentRepo.save(student);</span>
+        }
+
+<span class="nc" id="L68">        return student;</span>
+    }
+
+    @Override
+    public List&lt;Course&gt; getEnrolledCourses(String studentId) {
+<span class="nc" id="L73">        Student student = getStudent(studentId);</span>
+<span class="nc" id="L74">        return courseRepo.findAllById(student.getEnrolledCourses());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
